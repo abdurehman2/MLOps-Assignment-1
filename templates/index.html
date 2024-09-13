@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>House Price Prediction</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="form-box">
+        <h1>House Price Predictor</h1>
+        <p>Enter details to predict the house price</p>
+        <form id="prediction-form">
+          <div class="input-group">
+            <label for="sqft_living">Square Feet Living Area:</label>
+            <input
+              type="number"
+              id="sqft_living"
+              name="sqft_living"
+              placeholder="e.g., 2000"
+              required
+            />
+          </div>
+
+          <div class="row">
+            <div class="input-group">
+              <label for="bedrooms">Bedrooms:</label>
+              <input
+                type="number"
+                id="bedrooms"
+                name="bedrooms"
+                placeholder="e.g., 3"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="bathrooms">Bathrooms:</label>
+              <input
+                type="number"
+                id="bathrooms"
+                name="bathrooms"
+                placeholder="e.g., 2"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-group">
+              <label for="floors">Floors:</label>
+              <input
+                type="number"
+                id="floors"
+                name="floors"
+                placeholder="e.g., 1"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="street">Street:</label>
+              <input
+                type="text"
+                id="street"
+                name="street"
+                placeholder="e.g., 123 Main St"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-group">
+              <label for="city">City:</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="e.g., Seattle"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="statezip">State and ZIP:</label>
+              <input
+                type="text"
+                id="statezip"
+                name="statezip"
+                placeholder="e.g., WA 98101"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="country">Country:</label>
+            <input
+              type="text"
+              id="country"
+              name="country"
+              placeholder="e.g., USA"
+              required
+            />
+          </div>
+
+          <input type="submit" value="Predict Price" class="submit-btn" />
+        </form>
+
+        <div id="prediction-result"></div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("prediction-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the page from reloading
+
+          const formData = new FormData(this);
+          const data = {};
+          formData.forEach((value, key) => {
+            data[key] = value;
+          });
+
+          fetch("/predict", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              document.getElementById(
+                "prediction-result"
+              ).innerText = `Predicted Price: $${result.prediction}`;
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    </script>
+  </body>
+</html>
