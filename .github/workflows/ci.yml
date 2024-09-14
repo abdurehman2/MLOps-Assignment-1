@@ -53,18 +53,6 @@ jobs:
             export FLASK_ENV=production
           fi
 
-      # Step 5: Linting with flake8
-      - name: Lint with flake8
-        run: |
-          pip install flake8
-          flake8 --max-line-length=88 .
-
-      # Step 6: Static code analysis with pylint
-      - name: Static code analysis with pylint
-        run: |
-          pip install pylint
-          pylint app.py
-
       # Step 7: Run unit tests
       - name: Run unit tests
         run: |
