@@ -50,6 +50,7 @@ jobs:
           else
             echo "Setting up production environment..."
             export FLASK_ENV=production
+          fi
 
       # Step 5: Run unit tests
       - name: Run unit tests
