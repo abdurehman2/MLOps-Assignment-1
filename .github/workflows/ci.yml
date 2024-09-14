@@ -1,6 +1,5 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
-# Run the pipeline on every push and pull request
 on:
   push:
     branches:
@@ -53,19 +52,26 @@ jobs:
             export FLASK_ENV=production
           fi
 
-      - name: Print Working Directory
-        run: pwd
-
-      - name: List Files
-        run: ls -R
-
-        # Step 7: Run unit tests
+      # Step 5: Run unit tests
       - name: Run unit tests
         run: |
           python -m unittest tests.py
 
-      # Step 8: Build and run tests in the environment (Optional if you have different environments)
-      - name: Build and test in ${{ matrix.environment }} environment
+      # Step 6: Deploy to Vercel for each environment
+      - name: Deploy to Vercel
+        if: matrix.environment == 'development'
         run: |
-          # Add any environment-specific build or test steps here
-          echo "Running in ${{ matrix.environment }} environment"
+          npm install -g vercel
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Staging
+        if: matrix.environment == 'staging'
+        run: |
+          npm install -g vercel
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --env=staging
+
+      - name: Deploy to Production
+        if: matrix.environment == 'production'
+        run: |
+          npm install -g vercel
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --env=production
