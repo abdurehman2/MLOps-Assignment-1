@@ -1,0 +1,77 @@
+name: CI Pipeline
+
+# Run the pipeline on every push and pull request
+on:
+  push:
+    branches:
+      - main
+      - development
+      - staging
+  pull_request:
+    branches:
+      - main
+      - development
+      - staging
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10] # Test on multiple Python versions
+        environment: [development, staging, production]
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Set environment variables based on environment
+      - name: Set up environment
+        run: |
+          if [ "${{ matrix.environment }}" = "development" ]; then
+            echo "Setting up development environment..."
+            export FLASK_ENV=development
+          elif [ "${{ matrix.environment }}" = "staging" ]; then
+            echo "Setting up staging environment..."
+            export FLASK_ENV=staging
+          else
+            echo "Setting up production environment..."
+            export FLASK_ENV=production
+          fi
+
+      # Step 5: Linting with flake8
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 --max-line-length=88 .
+
+      # Step 6: Static code analysis with pylint
+      - name: Static code analysis with pylint
+        run: |
+          pip install pylint
+          pylint app.py
+
+      # Step 7: Run unit tests
+      - name: Run unit tests
+        run: |
+          python -m unittest discover -s tests
+
+      # Step 8: Build and run tests in the environment (Optional if you have different environments)
+      - name: Build and test in ${{ matrix.environment }} environment
+        run: |
+          # Add any environment-specific build or test steps here
+          echo "Running in ${{ matrix.environment }} environment"
