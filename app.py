@@ -1,14 +1,18 @@
 from flask import Flask, request, jsonify, render_template
 import pandas as pd
+import os
 import joblib
 
 app = Flask(__name__)
 
+# Get the current directory of the script
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Load the trained model
-model = joblib.load('model_training/house_price_model.pkl')
+model = joblib.load(os.path.join(base_dir, 'model_training', 'house_price_model.pkl'))
 
 # Load the training data to get the columns used for training
-data_path = r'model_training\data.csv'
+data_path = os.path.join(base_dir, 'model_training', 'data.csv')
 df = pd.read_csv(data_path)
 df = df.drop('date', axis=1)
 categorical_columns = ['street', 'city', 'statezip', 'country']
